@@ -1,24 +1,16 @@
 import Head from 'next/head'
-import Image from 'next/image'
-import { useEffect, useState } from 'react'
 
-export default function Home() {
-    const [loading, setLoading] = useState(true)
-    const [btcPrice, setBtcPrice] = useState(0)
+export async function getServerSideProps() {
+    const res = await fetch('http://localhost:3000/api/current-price')
+    const data = await res.json()
+    const btcPriceRounded = Math.round(data.rate)
 
-    useEffect(() => {
-        getBitcoinPrice()
-    }, [])
-
-    const getBitcoinPrice = async () => {
-        const res = await fetch('/api/current-price')
-        const data = await res.json()
-        const btcPriceRounded = Math.round(data.rate)
-
-        setBtcPrice(btcPriceRounded)
-        setLoading(false)
+    return {
+        props: { btcPrice: btcPriceRounded },
     }
+}
 
+export default function Home({ btcPrice }) {
     return (
         <div>
             <Head>
@@ -30,7 +22,8 @@ export default function Home() {
             <main className="bg-gradient-to-br from-orange-500 to-yellow-300">
                 <div className="flex justify-center items-center h-screen">
                     <h1 className="text-9xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-gray-700 to-gray-900">
-                        {!loading ? `$${btcPrice}` : '...'}
+                        {/* {btcPrice ? `$${btcPrice}` : '...'} */}
+                        {btcPrice}
                     </h1>
                 </div>
             </main>
